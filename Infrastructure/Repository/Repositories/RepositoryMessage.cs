@@ -12,6 +12,7 @@ namespace Infrastructure.Repository.Repositories
 
         public RepositoryMessage()
         {
+            //Commit 
             _OptionBuilder = new DbContextOptions<ContextBase>();
         }
     
