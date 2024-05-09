@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using System.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace WebAPIs.Token
 {
@@ -61,7 +62,28 @@ namespace WebAPIs.Token
 
         public TokenJWT Builder()
         {
-            return null;
+            EnsureArguments();
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub,this.subject),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            }.Union(this.claims.Select(item => new Claim(item.Key, item.Value)));
+
+            var token = new JwtSecurityToken(
+               
+                issuer: this.issuer,
+                audience: this.audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
+                signingCredentials: new SigningCredentials(
+                                                            this.SecurityKey,
+                                                            SecurityAlgorithms.HmacSha256
+                                                          )
+
+                );
+
+            return new TokenJWT(token);
             
         }
     }
